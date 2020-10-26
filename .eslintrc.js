@@ -62,7 +62,6 @@ module.exports = {
     'jsx-a11y/no-noninteractive-element-interactions': 0,
 
     'lines-between-class-members': [2, 'always'],
-    // indent: [2, 2, { SwitchCase: 1 }],
     'linebreak-style': [2, 'unix'],
     quotes: [2, 'single'],
     semi: [2, 'never'],
