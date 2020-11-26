@@ -1,13 +1,14 @@
 {
   "name": "webpack-react-typescript",
   "version": "1.0.0",
-  "description": "",
+  "description": "webpack构建react项目",
   "main": "index.js",
+  "homepage": "https://Season-Z.github.io/webpack-react-typescript",
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack-dev-server --config ./scripts/config/webpack.development.js",
     "build": "cross-env NODE_ENV=production webpack --config ./scripts/config/webpack.production.js"
   },
-  "keywords": [],
+  "keywords": ["typescript", "react", "webpack"],
   "author": "Season-Z",
   "license": "MIT",
   "devDependencies": {
