@@ -15,6 +15,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@master
         env:
           ACCESS_TOKEN: ${{ secrets.TOKEN }}
-          BRANCH: gh-pages
+          BRANCH: home-pages
           FOLDER: dist
-          BUILD_SCRIPT: npm install && npm run build
+          BUILD_SCRIPT: yarn && yarn build
