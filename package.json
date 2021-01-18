@@ -1,7 +1,7 @@
 {
   "name": "webpack-react-typescript",
   "version": "1.0.0",
-  "description": "webpack构建react项目",
+  "description": "webpack构建react+typescript项目",
   "main": "index.js",
   "homepage": "https://Season-Z.github.io/webpack-react-typescript",
   "scripts": {
