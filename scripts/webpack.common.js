@@ -6,7 +6,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { isDev, PROJECT_PATH, IS_OPEN_HARD_SOURCE } = require('./config')
 
 const getCssLoaders = (importLoaders) => [
@@ -22,19 +22,21 @@ const getCssLoaders = (importLoaders) => [
   {
     loader: 'postcss-loader',
     options: {
-      ident: 'postcss',
-      plugins: [
-        // 修复一些和 flex 布局相关的 bug
-        require('postcss-flexbugs-fixes'),
-        require('postcss-preset-env')({
-          autoprefixer: {
-            grid: true,
-            flexbox: 'no-2009',
-          },
-          stage: 3,
-        }),
-        require('postcss-normalize'),
-      ],
+      postcssOptions: {
+        ident: "postcss",
+        plugins: [
+          // 修复一些和 flex 布局相关的 bug
+          require('postcss-flexbugs-fixes'),
+          require('postcss-preset-env')({
+            autoprefixer: {
+              grid: true,
+              flexbox: 'no-2009',
+            },
+            stage: 3,
+          }),
+          require('postcss-normalize'),
+        ],
+      },
       sourceMap: isDev,
     },
   },
@@ -45,7 +47,7 @@ module.exports = {
     app: resolve(PROJECT_PATH, './src/index.tsx'),
   },
   output: {
-    filename: `js/[name]${isDev ? '' : '.[hash:8]'}.js`,
+    filename: `js/[name]${isDev ? '' : '.[contenthash]'}.js`,
     path: resolve(PROJECT_PATH, './dist'),
   },
   resolve: {
@@ -148,7 +150,10 @@ module.exports = {
           context: resolve(PROJECT_PATH, './public'),
           from: '*',
           to: resolve(PROJECT_PATH, './dist'),
-          toType: 'dir',
+          // toType: 'dir',
+          globOptions: {
+            ignore: ['**/index.html']
+          }
         },
       ],
     }),
@@ -186,7 +191,7 @@ module.exports = {
           compress: { pure_funcs: ['console.log'] },
         },
       }),
-      !isDev && new OptimizeCssAssetsPlugin(),
+      !isDev && new CssMinimizerPlugin(),
     ].filter(Boolean),
     splitChunks: {
       chunks: 'all',

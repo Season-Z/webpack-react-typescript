@@ -10,7 +10,7 @@ const { PROJECT_PATH, shouldOpenAnalyzer } = require('./config')
 
 module.exports = merge(common, {
   mode: 'production',
-  devtool: 'none',
+  devtool: false,
   plugins: [
     new CleanWebpackPlugin(),
     new PurgeCSSPlugin({
@@ -22,11 +22,11 @@ module.exports = merge(common, {
       banner:
         '/** @preserve Powered by webpack-react-typescript (https://Season-Z.github.io/webpack-react-typescript) */',
     }),
-    shouldOpenAnalyzer &&
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'server',
-        analyzerHost: '127.0.0.1',
-        analyzerPort: 8888,
-      }),
+    // shouldOpenAnalyzer &&
+    //   new BundleAnalyzerPlugin({
+    //     analyzerMode: 'server',
+    //     analyzerHost: '127.0.0.1',
+    //     analyzerPort: 8888,
+    //   }),
   ].filter(Boolean),
 })
