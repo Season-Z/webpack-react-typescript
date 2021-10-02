@@ -6,7 +6,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { isDev, PROJECT_PATH, IS_OPEN_HARD_SOURCE } = require('./config')
 
 const getCssLoaders = (importLoaders) => [
@@ -22,19 +22,21 @@ const getCssLoaders = (importLoaders) => [
   {
     loader: 'postcss-loader',
     options: {
-      ident: 'postcss',
-      plugins: [
-        // 修复一些和 flex 布局相关的 bug
-        require('postcss-flexbugs-fixes'),
-        require('postcss-preset-env')({
-          autoprefixer: {
-            grid: true,
-            flexbox: 'no-2009',
-          },
-          stage: 3,
-        }),
-        require('postcss-normalize'),
-      ],
+      postcssOptions: {
+        ident: "postcss",
+        plugins: [
+          // 修复一些和 flex 布局相关的 bug
+          require('postcss-flexbugs-fixes'),
+          require('postcss-preset-env')({
+            autoprefixer: {
+              grid: true,
+              flexbox: 'no-2009',
+            },
+            stage: 3,
+          }),
+          require('postcss-normalize'),
+        ],
+      },
       sourceMap: isDev,
     },
   },
@@ -45,7 +47,7 @@ module.exports = {
     app: resolve(PROJECT_PATH, './src/index.tsx'),
   },
   output: {
-    filename: `js/[name]${isDev ? '' : '.[hash:8]'}.js`,
+    filename: `js/[name]${isDev ? '' : '.[contenthash]'}.js`,
     path: resolve(PROJECT_PATH, './dist'),
   },
   resolve: {
@@ -128,19 +130,19 @@ module.exports = {
       minify: isDev
         ? false
         : {
-            removeAttributeQuotes: true,
-            collapseWhitespace: true,
-            removeComments: true,
-            collapseBooleanAttributes: true,
-            collapseInlineTagWhitespace: true,
-            removeRedundantAttributes: true,
-            removeScriptTypeAttributes: true,
-            removeStyleLinkTypeAttributes: true,
-            minifyCSS: true,
-            minifyJS: true,
-            minifyURLs: true,
-            useShortDoctype: true,
-          },
+          removeAttributeQuotes: true,
+          collapseWhitespace: true,
+          removeComments: true,
+          collapseBooleanAttributes: true,
+          collapseInlineTagWhitespace: true,
+          removeRedundantAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          minifyCSS: true,
+          minifyJS: true,
+          minifyURLs: true,
+          useShortDoctype: true,
+        },
     }),
     new CopyPlugin({
       patterns: [
@@ -148,7 +150,10 @@ module.exports = {
           context: resolve(PROJECT_PATH, './public'),
           from: '*',
           to: resolve(PROJECT_PATH, './dist'),
-          toType: 'dir',
+          // toType: 'dir',
+          globOptions: {
+            ignore: ['**/index.html']
+          }
         },
       ],
     }),
@@ -161,13 +166,16 @@ module.exports = {
         configFile: resolve(PROJECT_PATH, './tsconfig.json'),
       },
     }),
-    IS_OPEN_HARD_SOURCE && new HardSourceWebpackPlugin(),
+
+    // new HardSourceWebpackPlugin(),
+    // new HardSourceWebpackPlugin.ExcludeModulePlugin([]),
+
     !isDev &&
-      new MiniCssExtractPlugin({
-        filename: 'css/[name].[contenthash:8].css',
-        chunkFilename: 'css/[name].[contenthash:8].css',
-        ignoreOrder: false,
-      }),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:8].css',
+      chunkFilename: 'css/[name].[contenthash:8].css',
+      ignoreOrder: false,
+    }),
   ].filter(Boolean),
   externals: {
     react: 'React',
@@ -177,17 +185,34 @@ module.exports = {
     minimize: !isDev,
     minimizer: [
       !isDev &&
-        new TerserPlugin({
-          extractComments: false,
-          terserOptions: {
-            compress: { pure_funcs: ['console.log'] },
-          },
-        }),
-      !isDev && new OptimizeCssAssetsPlugin(),
+      new TerserPlugin({
+        extractComments: false,
+        terserOptions: {
+          compress: { pure_funcs: ['console.log'] },
+        },
+      }),
+      !isDev && new CssMinimizerPlugin(),
     ].filter(Boolean),
     splitChunks: {
       chunks: 'all',
-      name: true,
+      minSize: 20000,
+      minRemainingSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30,
+      enforceSizeThreshold: 50000,
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true,
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
     },
   },
 }
