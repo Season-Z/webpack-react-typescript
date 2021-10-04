@@ -7,6 +7,8 @@ const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const { ModuleFederationPlugin } = require('webpack').container
+const packageJSON = require('../package.json')
 const { isDev, PROJECT_PATH, IS_OPEN_HARD_SOURCE } = require('./config')
 
 const getCssLoaders = (importLoaders) => [
@@ -44,7 +46,7 @@ const getCssLoaders = (importLoaders) => [
 
 module.exports = {
   entry: {
-    app: resolve(PROJECT_PATH, './src/index.tsx'),
+    app: resolve(PROJECT_PATH, './src/index.ts'),
   },
   output: {
     filename: `js/[name]${isDev ? '' : '.[contenthash]'}.js`,
@@ -123,6 +125,16 @@ module.exports = {
     ],
   },
   plugins: [
+    new ModuleFederationPlugin({
+      name: "container",
+      remotes: {
+        marketing: "marketing@http://localhost:8081/remoteEntry.js",
+        auth: "auth@http://localhost:8082/remoteEntry.js",
+        dashboard: "dashboard@http://localhost:8083/remoteEntry.js"
+      },
+      shared: packageJSON.dependencies
+    }),
+
     new HtmlWebpackPlugin({
       template: resolve(PROJECT_PATH, './public/index.html'),
       filename: 'index.html',
@@ -150,7 +162,6 @@ module.exports = {
           context: resolve(PROJECT_PATH, './public'),
           from: '*',
           to: resolve(PROJECT_PATH, './dist'),
-          // toType: 'dir',
           globOptions: {
             ignore: ['**/index.html']
           }
@@ -177,10 +188,10 @@ module.exports = {
       ignoreOrder: false,
     }),
   ].filter(Boolean),
-  externals: {
-    react: 'React',
-    'react-dom': 'ReactDOM',
-  },
+  // externals: {
+  //   react: 'React',
+  //   'react-dom': 'ReactDOM',
+  // },
   optimization: {
     minimize: !isDev,
     minimizer: [
