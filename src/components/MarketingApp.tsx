@@ -19,5 +19,9 @@ export default function MarketingApp() {
 
     if (onParentNavigate) history.listen(onParentNavigate)
   }, [])
-  return <div ref={ref}></div>
+  return (
+    <div>
+      <div ref={ref}></div>bbbbbjbjb
+    </div>
+  )
 }

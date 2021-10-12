@@ -3,8 +3,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const WebpackBar = require('webpackbar')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { ModuleFederationPlugin } = require('webpack').container
@@ -52,19 +52,19 @@ module.exports = {
     filename: `js/[name]${isDev ? '' : '.[contenthash]'}.js`,
     path: resolve(PROJECT_PATH, './dist'),
   },
+  target: 'web',
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.json'],
     alias: {
-      Src: resolve(PROJECT_PATH, './src'),
-      Common: resolve(PROJECT_PATH, './src/common'),
-      Components: resolve(PROJECT_PATH, './src/components'),
-      Utils: resolve(PROJECT_PATH, './src/utils'),
+      '@src': resolve(PROJECT_PATH, './src'),
+      'components': resolve(PROJECT_PATH, './src/components'),
+      '@utils': resolve(PROJECT_PATH, './src/utils'),
     },
   },
   module: {
     rules: [
       {
-        test: /\.(tsx?|js)$/,
+        test: /\.(tsx?|js|ts|jsx)$/,
         loader: 'babel-loader',
         options: { cacheDirectory: true },
         exclude: /node_modules/,
@@ -98,29 +98,23 @@ module.exports = {
         ],
       },
       {
-        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 10 * 1024,
-              name: '[name].[contenthash:8].[ext]',
-              outputPath: 'assets/images',
-            },
-          },
-        ],
+        test: /\.(png|svg|gif|jpe?g)$/,
+        type: 'asset',
+        generator: {
+          filename: "img/[name].[hash:4][ext]"
+        },
+        parser: {
+          dataUrlCondition: {
+            maxSize: 30 * 1024
+          }
+        }
       },
       {
-        test: /\.(ttf|woff|woff2|eot|otf)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              name: '[name].[contenthash:8].[ext]',
-              outputPath: 'assets/fonts',
-            },
-          },
-        ],
+        test: /\.(ttf|woff2?)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'font/[name].[hash:3][ext]'
+        }
       },
     ],
   },
@@ -156,6 +150,7 @@ module.exports = {
           useShortDoctype: true,
         },
     }),
+    new CleanWebpackPlugin(),
     new CopyPlugin({
       patterns: [
         {
@@ -178,9 +173,6 @@ module.exports = {
       },
     }),
 
-    // new HardSourceWebpackPlugin(),
-    // new HardSourceWebpackPlugin.ExcludeModulePlugin([]),
-
     !isDev &&
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:8].css',
@@ -188,10 +180,10 @@ module.exports = {
       ignoreOrder: false,
     }),
   ].filter(Boolean),
-  // externals: {
-  //   react: 'React',
-  //   'react-dom': 'ReactDOM',
-  // },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  },
   optimization: {
     minimize: !isDev,
     minimizer: [
