@@ -58,9 +58,6 @@ export default function Header({ status, setStatus }: any) {
     <React.Fragment>
       <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
-          <Typography variant="h6" color="inherit" noWrap component={RouterLink} to="/">
-            拉勾教育
-          </Typography>
           <Button
             color="primary"
             variant="outlined"
