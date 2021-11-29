@@ -1,74 +1,63 @@
+/**
+ * @typescript-eslint 规则参考
+ * https://www.npmjs.com/package/@typescript-eslint/eslint-plugin#supported-rules
+ */
+
 module.exports = {
+  root: true,
+
+  parser: '@typescript-eslint/parser', // 指定ESLint解析器
+
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:jsx-control-statements/recommended',
+    'prettier',
+    'plugin:prettier/recommended',
+  ],
+
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+
+  plugins: ['react', 'prettier'],
+
   env: {
     browser: true,
-    es2020: true,
     node: true,
+    es6: true,
+    mocha: true,
+    'jsx-control-statements/jsx-control-statements': true,
   },
-  extends: [
-    'airbnb',
-    'airbnb/hooks',
-    'plugin:react/recommended',
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
-    'prettier/@typescript-eslint',
-    'prettier/react',
-  ],
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    ecmaVersion: 11,
-    sourceType: 'module',
+
+  globals: {
+    $api: true,
   },
-  plugins: ['react', '@typescript-eslint'],
-  settings: {
-    'import/resolver': {
-      node: {
-        extensions: ['.tsx', '.ts', '.js', '.json'],
-      },
-      typescript: {},
-    },
-  },
+
   rules: {
-    'import/extensions': [
-      2,
-      'ignorePackages',
-      {
-        ts: 'never',
-        tsx: 'never',
-        js: 'never',
-      },
-    ],
-    'import/no-extraneous-dependencies': [2, { devDependencies: true }],
-    'import/prefer-default-export': 0,
-    'import/no-unresolved': 2,
-    '@typescript-eslint/no-useless-constructor': 2,
+    indent: ['error', 2, { SwitchCase: 1 }], // 强制使用两个空格作为缩进
+    quotes: ['error', 'single'], //强制使用单引号
+    semi: ['error', 'never'], //强制不使用分号结尾
+    'comma-dangle': ['error', 'always-multiline'], // 逗号结束
+    'no-param-reassign': 'error', // 禁止对 function 的参数进行重新赋值
+    'jsx-quotes': ['error', 'prefer-double'], // 强制所有 JSX 属性值使用双引号。
+    'prettier/prettier': 'error', // prettier
+    'prefer-rest-params': 0,
+
+    'react/display-name': 0,
+    'jsx-control-statements/jsx-use-if-tag': 0, // 强制在 jsx 中使用 if 判断
+    'jsx-control-statements/jsx-jcs-no-undef': 0,
+    '@typescript-eslint/no-explicit-any': 0, // 禁用 any 类型
+    '@typescript-eslint/ban-ts-ignore': 0, // 禁用 @ts-ignore
+    '@typescript-eslint/explicit-function-return-type': 0, // 在函数和类方法上需要显式的返回类型
+    '@typescript-eslint/no-var-requires': 0, // 除 import 语句外，禁止使用require语句
+    '@typescript-eslint/no-namespace': 0, // 禁用 namespace
+    '@typescript-eslint/no-use-before-define': 0,
+    '@typescript-eslint/no-empty-interface': 0,
     '@typescript-eslint/no-empty-function': 1,
-    '@typescript-eslint/no-var-requires': 0,
-    '@typescript-eslint/explicit-function-return-type': 0,
-    '@typescript-eslint/explicit-module-boundary-types': 0,
-    '@typescript-eslint/no-explicit-any': 0,
-
-    'react/jsx-filename-extension': [2, { extensions: ['.tsx', 'ts', '.jsx', 'js'] }],
-    'react/jsx-indent-props': [2, 2],
-    'react/jsx-indent': [2, 2],
-    'react/jsx-one-expression-per-line': 0,
-    'react/destructuring-assignment': 0,
-    'react/state-in-constructor': 0,
-    'react/jsx-props-no-spreading': 0,
-
-    'jsx-a11y/click-events-have-key-events': 0,
-    'jsx-a11y/no-noninteractive-element-interactions': 0,
-
-    'lines-between-class-members': [2, 'always'],
-    'linebreak-style': [2, 'unix'],
-    quotes: [2, 'single'],
-    semi: [2, 'never'],
-    'no-unused-expressions': 1,
-    'no-plusplus': 0,
-    'no-console': 0,
-    'class-methods-use-this': 2,
-    'global-require': 0,
+    '@typescript-eslint/no-unused-vars': 1, // 导入内容未使用
+    '@typescript-eslint/ban-ts-comment': 0, // 禁用 @ts-ignore 等注释
   },
 }

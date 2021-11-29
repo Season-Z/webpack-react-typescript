@@ -1,17 +1,18 @@
-const { resolve } = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyPlugin = require('copy-webpack-plugin')
-const WebpackBar = require('webpackbar')
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const TerserPlugin = require('terser-webpack-plugin')
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const { ModuleFederationPlugin } = require('webpack').container
-const packageJSON = require('../package.json')
-const { isDev, PROJECT_PATH, IS_OPEN_HARD_SOURCE } = require('./config')
+import { resolve } from 'path'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import CopyPlugin from 'copy-webpack-plugin'
+import WebpackBar from 'webpackbar'
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
+// @ts-ignore
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
+// import { ModuleFederationPlugin } from 'webpack'
+// import packageJSON from '../../package.json'
+import { isDev, PROJECT_PATH, IS_OPEN_HARD_SOURCE } from './config'
 
-const getCssLoaders = (importLoaders) => [
+const getCssLoaders = (importLoaders: number) => [
   isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
   {
     loader: 'css-loader',
@@ -25,7 +26,7 @@ const getCssLoaders = (importLoaders) => [
     loader: 'postcss-loader',
     options: {
       postcssOptions: {
-        ident: "postcss",
+        ident: 'postcss',
         plugins: [
           // 修复一些和 flex 布局相关的 bug
           require('postcss-flexbugs-fixes'),
@@ -44,9 +45,9 @@ const getCssLoaders = (importLoaders) => [
   },
 ]
 
-module.exports = {
+export default {
   entry: {
-    app: resolve(PROJECT_PATH, './src/index.ts'),
+    app: resolve(PROJECT_PATH, './src/index.tsx'),
   },
   output: {
     filename: `js/[name]${isDev ? '' : '.[contenthash]'}.js`,
@@ -57,7 +58,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js', '.json'],
     alias: {
       '@src': resolve(PROJECT_PATH, './src'),
-      'components': resolve(PROJECT_PATH, './src/components'),
+      components: resolve(PROJECT_PATH, './src/components'),
       '@utils': resolve(PROJECT_PATH, './src/utils'),
     },
   },
@@ -101,33 +102,33 @@ module.exports = {
         test: /\.(png|svg|gif|jpe?g)$/,
         type: 'asset',
         generator: {
-          filename: "img/[name].[hash:4][ext]"
+          filename: 'img/[name].[hash:4][ext]',
         },
         parser: {
           dataUrlCondition: {
-            maxSize: 30 * 1024
-          }
-        }
+            maxSize: 30 * 1024,
+          },
+        },
       },
       {
         test: /\.(ttf|woff2?)$/,
         type: 'asset/resource',
         generator: {
-          filename: 'font/[name].[hash:3][ext]'
-        }
+          filename: 'font/[name].[hash:3][ext]',
+        },
       },
     ],
   },
   plugins: [
-    new ModuleFederationPlugin({
-      name: "container",
-      remotes: {
-        marketing: "marketing@http://localhost:8081/remoteEntry.js",
-        auth: "auth@http://localhost:8082/remoteEntry.js",
-        dashboard: "dashboard@http://localhost:8083/remoteEntry.js"
-      },
-      shared: packageJSON.dependencies
-    }),
+    // new ModuleFederationPlugin({
+    //   name: 'container',
+    //   remotes: {
+    //     marketing: 'marketing@http://localhost:8081/remoteEntry.js',
+    //     auth: 'auth@http://localhost:8082/remoteEntry.js',
+    //     dashboard: 'dashboard@http://localhost:8083/remoteEntry.js',
+    //   },
+    //   shared: packageJSON.dependencies,
+    // }),
 
     new HtmlWebpackPlugin({
       template: resolve(PROJECT_PATH, './public/index.html'),
@@ -136,19 +137,19 @@ module.exports = {
       minify: isDev
         ? false
         : {
-          removeAttributeQuotes: true,
-          collapseWhitespace: true,
-          removeComments: true,
-          collapseBooleanAttributes: true,
-          collapseInlineTagWhitespace: true,
-          removeRedundantAttributes: true,
-          removeScriptTypeAttributes: true,
-          removeStyleLinkTypeAttributes: true,
-          minifyCSS: true,
-          minifyJS: true,
-          minifyURLs: true,
-          useShortDoctype: true,
-        },
+            removeAttributeQuotes: true,
+            collapseWhitespace: true,
+            removeComments: true,
+            collapseBooleanAttributes: true,
+            collapseInlineTagWhitespace: true,
+            removeRedundantAttributes: true,
+            removeScriptTypeAttributes: true,
+            removeStyleLinkTypeAttributes: true,
+            minifyCSS: true,
+            minifyJS: true,
+            minifyURLs: true,
+            useShortDoctype: true,
+          },
     }),
     new CleanWebpackPlugin(),
     new CopyPlugin({
@@ -158,8 +159,8 @@ module.exports = {
           from: '*',
           to: resolve(PROJECT_PATH, './dist'),
           globOptions: {
-            ignore: ['**/index.html']
-          }
+            ignore: ['**/index.html'],
+          },
         },
       ],
     }),
@@ -174,11 +175,11 @@ module.exports = {
     }),
 
     !isDev &&
-    new MiniCssExtractPlugin({
-      filename: 'css/[name].[contenthash:8].css',
-      chunkFilename: 'css/[name].[contenthash:8].css',
-      ignoreOrder: false,
-    }),
+      new MiniCssExtractPlugin({
+        filename: 'css/[name].[contenthash:8].css',
+        chunkFilename: 'css/[name].[contenthash:8].css',
+        ignoreOrder: false,
+      }),
   ].filter(Boolean),
   externals: {
     react: 'React',
@@ -188,12 +189,12 @@ module.exports = {
     minimize: !isDev,
     minimizer: [
       !isDev &&
-      new TerserPlugin({
-        extractComments: false,
-        terserOptions: {
-          compress: { pure_funcs: ['console.log'] },
-        },
-      }),
+        new TerserPlugin({
+          extractComments: false,
+          terserOptions: {
+            compress: { pure_funcs: ['console.log'] },
+          },
+        }),
       !isDev && new CssMinimizerPlugin(),
     ].filter(Boolean),
     splitChunks: {

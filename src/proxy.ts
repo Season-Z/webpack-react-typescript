@@ -8,4 +8,4 @@ const proxyConfig = {
   },
 }
 
-module.exports = proxyConfig
+export default proxyConfig
