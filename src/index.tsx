@@ -13,4 +13,4 @@ import App from './App'
 
 // export { mount }
 
-ReactDOM.render(<App name="11" age={12} />, document.getElementById('#root'))
+ReactDOM.render(<App name="11" age={12} />, document.getElementById('root'))
