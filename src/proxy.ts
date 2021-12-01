@@ -1,6 +1,6 @@
 const proxyConfig = {
   '/api': {
-    target: 'https://apigw.ypshengxian.com/request',
+    target: '',
     changeOrigin: true,
     pathRewrite: {
       '/api': '',
