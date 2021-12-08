@@ -58,7 +58,9 @@ export default {
     extensions: ['.tsx', '.ts', '.js', '.json'],
     alias: {
       '@src': resolve(PROJECT_PATH, './src'),
-      components: resolve(PROJECT_PATH, './src/components'),
+      '@components': resolve(PROJECT_PATH, './src/components'),
+      '@views': resolve(PROJECT_PATH, './src/views'),
+      '@router': resolve(PROJECT_PATH, './src/router'),
       '@utils': resolve(PROJECT_PATH, './src/utils'),
     },
   },
